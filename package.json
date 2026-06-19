@@ -1,0 +1,21 @@
+{
+  "name": "tessera",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Tessera — on-chain credit bureau for AI agents on HashKey Chain",
+  "packageManager": "pnpm@10.33.2",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "contracts:build": "cd contracts && forge build",
+    "contracts:test": "cd contracts && forge test -vvv",
+    "contracts:snapshot": "cd contracts && forge snapshot",
+    "contracts:deploy:testnet": "cd contracts && forge script script/Deploy.s.sol --rpc-url $HSK_TESTNET_RPC --broadcast",
+    "contracts:deploy:mainnet": "cd contracts && forge script script/Deploy.s.sol --rpc-url $HSK_MAINNET_RPC --broadcast",
+    "agent:simulate": "pnpm --filter @tessera/agent simulate",
+    "agent:settle": "pnpm --filter @tessera/agent settle",
+    "web:dev": "pnpm --filter @tessera/web dev",
+    "web:build": "pnpm --filter @tessera/web build"
+  }
+}

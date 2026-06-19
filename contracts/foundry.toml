@@ -1,0 +1,36 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc = "0.8.24"
+# HashKey Chain is an OP-Stack L2 launched post-Ecotone, which activated the full Cancun EVM
+# (PUSH0, MCOPY, transient storage) across OP-Stack. Cancun matches solc 0.8.24's default target.
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+via_ir = false
+# Deploy.s.sol writes deployed addresses to ./deployments/<network>.json
+fs_permissions = [{ access = "read-write", path = "./deployments" }]
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "forge-std/=lib/forge-std/src/",
+]
+
+[fmt]
+line_length = 100
+tab_width = 4
+bracket_spacing = true
+
+[lint]
+# Score casts are explicitly clamped to [0,1000] before the uint16 cast, and int->uint
+# casts only run on values proven non-negative, so the truncation lint is a false positive here.
+exclude_lints = ["unsafe-typecast"]
+
+[rpc_endpoints]
+hsk_testnet = "${HSK_TESTNET_RPC}"
+hsk_mainnet = "${HSK_MAINNET_RPC}"
+
+# Blockscout verification (no real API key required; any non-empty key works)
+[etherscan]
+hsk_testnet = { key = "${HSK_EXPLORER_API_KEY}", url = "https://testnet-explorer.hsk.xyz/api", chain = 133 }
+hsk_mainnet = { key = "${HSK_EXPLORER_API_KEY}", url = "https://hashkey.blockscout.com/api", chain = 177 }
