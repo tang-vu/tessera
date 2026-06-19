@@ -11,12 +11,14 @@ credit terms (limit + fee) visibly improve in the UI.
 
 | Phase | Scope | Status |
 |---|---|---|
-| P0 | Scaffold: pnpm workspace, Foundry, Next.js, `.env.example`, CI | ✅ done (scaffold) |
-| P1 | Core contracts + full Foundry tests + testnet deploy | ⏳ in progress |
-| P2 | Agent service: mandates, reasoning receipts, settle, simulate | ☐ |
-| P3 | Dashboard: directory, agent detail (score chart + receipts + terms), live `/demo` | ☐ |
-| P4 | CreditLine (DeFi crossover) + `/credit` UI — **stretch** | ☐ |
-| P5 | Polish: DEMO.md storyboard, README, mainnet deploy ready | ☐ |
+| P0 | Scaffold: pnpm workspace, Foundry, Next.js, `.env.example` | ✅ done |
+| P1 | Core contracts + full Foundry tests (50 passing) + deploy script | ✅ done |
+| P2 | Agent service: mandates, reasoning receipts, settle, simulate | ✅ done (validated on anvil) |
+| P3 | Dashboard: directory, agent detail (score chart + receipts + terms), live `/demo` | ⏳ in progress |
+| P4 | CreditLine (DeFi crossover) + `/credit` UI | ✅ contract done + tested; UI in P3 |
+| P5 | Polish: DEMO.md storyboard, README, mainnet deploy ready | ✅ docs done; final verify pending |
+
+**Remaining:** finish + verify P3 dashboard build; run a live testnet deploy (needs a funded burner key — user step); final review.
 
 The demo loop (P1–P3) is sacred. P4/EAS are stretch — a flawless P1–P3 beats a half-broken P4.
 
