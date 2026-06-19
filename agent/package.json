@@ -1,0 +1,35 @@
+{
+  "name": "@tessera/agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Tessera AI agent service: AP2 mandates, Gemini reasoning receipts, settlement orchestration.",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./mandate": "./src/mandate.ts",
+    "./receipt": "./src/receipt.ts",
+    "./settle": "./src/settle.ts",
+    "./chain": "./src/chain.ts",
+    "./config": "./src/config.ts"
+  },
+  "scripts": {
+    "settle": "tsx src/settle.ts",
+    "simulate": "tsx src/simulate.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google/genai": "^0.3.0",
+    "dotenv": "^16.4.5",
+    "viem": "^2.21.0"
+  },
+  "optionalDependencies": {
+    "@irys/upload": "^0.0.14",
+    "@irys/upload-ethereum": "^0.0.14"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
