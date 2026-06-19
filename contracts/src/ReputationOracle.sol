@@ -24,7 +24,8 @@ contract ReputationOracle is IReputationOracle, Ownable {
 
     int256 internal constant REWARD_RECEIPTED = 25; // success + verified receipt
     int256 internal constant REWARD_NO_RECEIPT = 2; // success, no receipt
-    int256 internal constant REPAY_REWARD = 25; // honored credit obligation
+    int256 internal constant REPAY_REWARD = 10; // honored credit obligation (secondary signal; receipted
+        // settlements are the primary score driver — keeps repayment from being a cheap path to Prime)
     int256 internal constant ONTIME_BONUS = 5;
     int256 internal constant LATE_PENALTY = 10;
     int256 internal constant FAIL_PENALTY = 40;

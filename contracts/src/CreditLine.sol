@@ -15,9 +15,11 @@ import {ICreditPolicy} from "./interfaces/ICreditPolicy.sol";
 ///         credit score unlocks (no collateral, backed only by reputation) and repay with a fee priced
 ///         by their tier. Defaults are written off as LP loss and slash the agent's score.
 ///
-/// @dev Share accounting: shares track a pro-rata claim on `totalAssets() = cash + outstanding principal`.
-///      Repaid fees stay as cash and lift `totalAssets`, so shares appreciate (LP yield). A default
-///      reduces outstanding principal without returning cash, so `totalAssets` drops (LP loss).
+/// @dev Pool cash is tracked with INTERNAL accounting (`poolCash`), not the raw token balance, so a
+///      direct token donation cannot inflate the share price (neutralizes the ERC4626 first-depositor /
+///      donation attack). Shares track a pro-rata claim on `totalAssets() = poolCash + outstanding
+///      principal`. Repaid fees stay as cash and lift `totalAssets`, so shares appreciate (LP yield); a
+///      default reduces outstanding principal without returning cash, so `totalAssets` drops (LP loss).
 contract CreditLine is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
@@ -28,9 +30,14 @@ contract CreditLine is Ownable, ReentrancyGuard {
 
     uint256 public loanDuration = 7 days;
 
+    /// @dev Loans below this originated principal earn no repayment reputation — blocks dust-loop farming.
+    uint256 internal constant MIN_REWARDED_PRINCIPAL = 100e6;
+
     uint256 public totalShares;
     mapping(address => uint256) public sharesOf;
 
+    /// @notice Pool cash under internal accounting (excludes un-accounted token donations).
+    uint256 public poolCash;
     /// @notice Total outstanding borrowed principal across all agents.
     uint256 public totalPrincipalOut;
 
@@ -43,6 +50,8 @@ contract CreditLine is Ownable, ReentrancyGuard {
 
     /// @notice agentId => active loan position.
     mapping(uint256 => Loan) public loans;
+    /// @dev agentId => cumulative principal borrowed in the current (un-cleared) loan cycle.
+    mapping(uint256 => uint256) private _originated;
 
     event Deposit(address indexed lp, uint256 amount, uint256 shares);
     event Withdraw(address indexed lp, uint256 amount, uint256 shares);
@@ -64,14 +73,14 @@ contract CreditLine is Ownable, ReentrancyGuard {
         policy = ICreditPolicy(policy_);
     }
 
-    /// @notice Idle stablecoin held by the pool (available to borrow / withdraw).
+    /// @notice Idle stablecoin held by the pool (available to borrow / withdraw), per internal accounting.
     function cash() public view returns (uint256) {
-        return stablecoin.balanceOf(address(this));
+        return poolCash;
     }
 
     /// @notice Total pool assets backing LP shares: idle cash + outstanding principal.
     function totalAssets() public view returns (uint256) {
-        return cash() + totalPrincipalOut;
+        return poolCash + totalPrincipalOut;
     }
 
     // ── Liquidity providers ───────────────────────────────────────────────────
@@ -84,6 +93,7 @@ contract CreditLine is Ownable, ReentrancyGuard {
         require(shares > 0, "zero shares");
         totalShares += shares;
         sharesOf[msg.sender] += shares;
+        poolCash += amount;
         stablecoin.safeTransferFrom(msg.sender, address(this), amount);
         emit Deposit(msg.sender, amount, shares);
     }
@@ -92,9 +102,10 @@ contract CreditLine is Ownable, ReentrancyGuard {
     function withdraw(uint256 shares) external nonReentrant returns (uint256 amount) {
         require(shares > 0 && shares <= sharesOf[msg.sender], "bad shares");
         amount = (shares * totalAssets()) / totalShares;
-        require(cash() >= amount, "insufficient cash");
+        require(poolCash >= amount, "insufficient cash");
         totalShares -= shares;
         sharesOf[msg.sender] -= shares;
+        poolCash -= amount;
         stablecoin.safeTransfer(msg.sender, amount);
         emit Withdraw(msg.sender, amount, shares);
     }
@@ -111,20 +122,25 @@ contract CreditLine is Ownable, ReentrancyGuard {
 
         (uint256 limit, uint16 feeBps) = policy.terms(oracle.scoreOf(agentId));
         require(l.principal + amount <= limit, "exceeds limit");
-        require(cash() >= amount, "insufficient liquidity");
+        require(poolCash >= amount, "insufficient liquidity");
 
+        bool fresh = l.principal == 0;
         uint256 fee = (amount * feeBps) / 10_000;
         l.principal += amount;
         l.feeOwed += fee;
-        l.dueDate = uint64(block.timestamp + loanDuration);
+        // Only set the clock when opening a fresh loan, so a top-up cannot postpone an overdue default.
+        if (fresh) l.dueDate = uint64(block.timestamp + loanDuration);
+        _originated[agentId] += amount;
         totalPrincipalOut += amount;
+        poolCash -= amount;
 
         stablecoin.safeTransfer(msg.sender, amount);
         emit Borrow(agentId, amount, fee, l.dueDate);
     }
 
     /// @notice Repay up to the outstanding fee + principal for the caller-agent's loan.
-    /// @dev Payment is applied to the fee first, then principal. Full repayment rewards reputation.
+    /// @dev Payment is applied to the fee first, then principal. Fully repaying a non-dust loan on time
+    ///      rewards reputation (loans below MIN_REWARDED_PRINCIPAL earn nothing → no dust-loop farming).
     function repay(uint256 amount) external nonReentrant {
         require(amount > 0, "amount=0");
         uint256 agentId = registry.agentIdOf(msg.sender);
@@ -135,6 +151,7 @@ contract CreditLine is Ownable, ReentrancyGuard {
 
         uint256 pay = amount > owed ? owed : amount;
         stablecoin.safeTransferFrom(msg.sender, address(this), pay);
+        poolCash += pay;
 
         uint256 toFee = pay > l.feeOwed ? l.feeOwed : pay;
         l.feeOwed -= toFee;
@@ -146,8 +163,12 @@ contract CreditLine is Ownable, ReentrancyGuard {
         emit Repay(agentId, pay, l.principal, l.feeOwed);
 
         if (cleared) {
-            bool onTime = block.timestamp <= l.dueDate;
-            oracle.recordRepayment(agentId, pay, onTime);
+            uint256 originated = _originated[agentId];
+            _originated[agentId] = 0;
+            if (originated >= MIN_REWARDED_PRINCIPAL) {
+                bool onTime = block.timestamp <= l.dueDate;
+                oracle.recordRepayment(agentId, originated, onTime);
+            }
         }
     }
 
@@ -164,6 +185,7 @@ contract CreditLine is Ownable, ReentrancyGuard {
         totalPrincipalOut -= lost;
         l.principal = 0;
         l.feeOwed = 0;
+        _originated[agentId] = 0;
 
         oracle.recordDefault(agentId);
         emit Defaulted(agentId, lost);
@@ -179,7 +201,7 @@ contract CreditLine is Ownable, ReentrancyGuard {
         return limit - used;
     }
 
-    /// @notice Set the loan duration used for new/extended borrows.
+    /// @notice Set the loan duration used for new borrows.
     function setLoanDuration(uint256 newDuration) external onlyOwner {
         require(newDuration > 0, "duration=0");
         loanDuration = newDuration;

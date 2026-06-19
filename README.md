@@ -164,6 +164,13 @@ terms + draws credit) and dishonest-agent (cut off) paths. Scoring math is inten
 
 - Reputation scoring + credit logic are transparent, OpenZeppelin-based, and NatSpec'd — no clever unaudited math.
 - Score mutations are restricted to authorized recorder contracts; tier config is owner-gated.
+- Hardened after an internal review: the lending pool uses **internal cash accounting** (a direct token
+  donation cannot inflate share price — neutralizes the ERC4626 first-depositor attack); repayment only
+  rewards reputation above a minimum loan size (no dust-loop score farming) and is a secondary signal to
+  receipted settlements; a loan top-up cannot reset an overdue due date. Covered by dedicated tests.
+- Known, accepted limitations for the demo model: receipt signatures are bound to the agent + settlement
+  via the hashed trace contents (no separate EIP-712 domain); the settlement coordinator (owner) relays
+  failure/dispute outcomes that, in production, come from HSP/arbitration.
 - No secrets are committed; `.env` is gitignored — only `.env.example` is tracked. Use a fresh burner key for deploys.
 
 ## License

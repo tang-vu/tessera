@@ -36,6 +36,9 @@ agent/.agents.json
 npm-debug.log*
 pnpm-debug.log*
 
+# internal planning / review artifacts (not part of the deliverable)
+plans/
+
 # OS / editor
 .DS_Store
 Thumbs.db

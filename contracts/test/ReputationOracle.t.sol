@@ -59,8 +59,8 @@ contract ReputationOracleTest is TesseraTestBase {
     }
 
     function test_RepaymentReward() public {
-        sys.oracle.recordRepayment(agentId, 1_000e6, true); // 25 + 10 + 5 = +40
-        assertEq(sys.oracle.scoreOf(agentId), 540);
+        sys.oracle.recordRepayment(agentId, 1_000e6, true); // 10 + 10 (volume) + 5 (on-time) = +25
+        assertEq(sys.oracle.scoreOf(agentId), 525);
     }
 
     function test_ClampsAtMax() public {

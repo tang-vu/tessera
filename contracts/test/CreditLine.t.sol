@@ -112,4 +112,36 @@ contract CreditLineTest is TesseraTestBase {
         vm.expectRevert(bytes("in default"));
         sys.creditLine.borrow(1);
     }
+
+    function test_DustRepaymentEarnsNoReputation() public {
+        _seedPool(20_000e6);
+        uint256 scoreBefore = sys.oracle.scoreOf(agentId);
+        // borrow→repay tiny amounts repeatedly must NOT farm reputation (sub-threshold loans)
+        for (uint256 i; i < 3; i++) {
+            vm.prank(controller);
+            sys.creditLine.borrow(1);
+            _fundAndApprove(controller, address(sys.creditLine), 1);
+            vm.prank(controller);
+            sys.creditLine.repay(1);
+        }
+        assertEq(sys.oracle.scoreOf(agentId), scoreBefore);
+    }
+
+    function test_DonationDoesNotInflateShares() public {
+        address attacker = makeAddr("attacker");
+        address victim = makeAddr("victim");
+        // attacker seeds 1 wei to become first depositor
+        _fundAndApprove(attacker, address(sys.creditLine), 1);
+        vm.prank(attacker);
+        sys.creditLine.deposit(1);
+        // direct token donation: internal accounting ignores it, so share price cannot be inflated
+        sys.mockUsdc.mint(address(sys.creditLine), 10_000e6);
+        _fundAndApprove(victim, address(sys.creditLine), 10_000e6);
+        vm.prank(victim);
+        sys.creditLine.deposit(10_000e6);
+        uint256 vShares = sys.creditLine.sharesOf(victim);
+        vm.prank(victim);
+        uint256 out = sys.creditLine.withdraw(vShares);
+        assertEq(out, 10_000e6); // victim fully recovers; donation can't be stolen via inflation
+    }
 }
