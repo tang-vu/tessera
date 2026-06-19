@@ -14,11 +14,14 @@ credit terms (limit + fee) visibly improve in the UI.
 | P0 | Scaffold: pnpm workspace, Foundry, Next.js, `.env.example` | ✅ done |
 | P1 | Core contracts + full Foundry tests (50 passing) + deploy script | ✅ done |
 | P2 | Agent service: mandates, reasoning receipts, settle, simulate | ✅ done (validated on anvil) |
-| P3 | Dashboard: directory, agent detail (score chart + receipts + terms), live `/demo` | ⏳ in progress |
-| P4 | CreditLine (DeFi crossover) + `/credit` UI | ✅ contract done + tested; UI in P3 |
-| P5 | Polish: DEMO.md storyboard, README, mainnet deploy ready | ✅ docs done; final verify pending |
+| P3 | Dashboard: directory, agent detail (score chart + receipts + terms), live `/demo` | ✅ done (validated on anvil) |
+| P4 | CreditLine (DeFi crossover) + `/credit` UI | ✅ done (contract tested + UI) |
+| P5 | Polish: DEMO.md storyboard, README, mainnet deploy ready | ✅ done |
 
-**Remaining:** finish + verify P3 dashboard build; run a live testnet deploy (needs a funded burner key — user step); final review.
+**Verified end-to-end on anvil:** dashboard reads live state; `POST /api/demo/settle` runs the full
+loop (Beacon 700→740, receipt anchored, terms read live). Contracts hardened after security review (52
+tests pass). **Only remaining step is the live testnet/mainnet deploy** — needs a funded burner key
+(`.env` → `DEPLOYER_PRIVATE_KEY` + faucet HSK); one command per `README.md`.
 
 The demo loop (P1–P3) is sacred. P4/EAS are stretch — a flawless P1–P3 beats a half-broken P4.
 
