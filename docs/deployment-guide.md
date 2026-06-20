@@ -82,6 +82,32 @@ forge script script/Deploy.s.sol --rpc-url <rpc> --resume \
 
 Or verify a single contract: `forge verify-contract <address> <Contract> --verifier blockscout --verifier-url <explorer>/api`.
 
+## Hosted dashboard (Vercel) — read-only
+
+Give judges a clickable URL. The hosted build reads **live testnet data**; the interactive "Run a
+Settlement" button is disabled on the public deploy (that flow is in the demo video and works locally),
+so no secrets are exposed.
+
+1. vercel.com → **Add New → Project** → import the GitHub repo.
+2. **Root Directory:** `web` (Next.js auto-detected; keep "Include files outside root directory" ON so the
+   pnpm workspace dep `@tessera/agent` resolves).
+3. **Environment Variables** (point at testnet, where the 5 demo agents are seeded):
+
+   | Key | Value |
+   |---|---|
+   | `CHAIN_ID` | `133` |
+   | `RPC_URL` | `https://testnet.hsk.xyz` |
+   | `NEXT_PUBLIC_CHAIN_ID` | `133` |
+   | `NEXT_PUBLIC_RPC_URL` | `https://testnet.hsk.xyz` |
+
+   Do **not** set `NEXT_PUBLIC_LIVE_DEMO` or `DEPLOYER_PRIVATE_KEY` → the site stays read-only.
+4. **Deploy.** Directory, agent detail (score chart + receipts), and credit pool render live testnet state;
+   addresses come bundled from `web/lib/deployments/133.json`.
+
+To enable the live settle button privately: set `NEXT_PUBLIC_LIVE_DEMO=true` + `DEPLOYER_PRIVATE_KEY`
+(note: a testnet settle takes ~10–15s, over Vercel Hobby's 10s function limit — use Pro or run locally).
+If the build can't resolve `@tessera/agent`, set Install Command to `pnpm install`.
+
 ## Network reference
 
 | | Testnet | Mainnet |

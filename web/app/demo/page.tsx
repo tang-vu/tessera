@@ -38,6 +38,8 @@ export default function DemoPage() {
   const [error, setError] = useState<string | null>(null);
   const [runCount, setRunCount] = useState(0);
   const { isConnected } = useAccount();
+  // Hosted (Vercel) deploys are read-only; live settlement is enabled only when explicitly turned on.
+  const liveDemo = process.env.NEXT_PUBLIC_LIVE_DEMO === "true";
 
   async function handleSettle() {
     setStatus("running");
@@ -83,6 +85,8 @@ export default function DemoPage() {
         <LoopDiagram />
       </div>
 
+      {liveDemo ? (
+      <>
       {/* CTA */}
       <div className="flex flex-col items-center gap-4">
         <button
@@ -157,6 +161,23 @@ export default function DemoPage() {
           </div>
           <div className="text-xs text-text-muted">
             Connect a wallet via the nav bar to sign and submit each step yourself.
+          </div>
+        </div>
+      )}
+      </>
+      ) : (
+        <div className="rounded-card border border-border-subtle bg-surface-2/40 p-6 text-center space-y-2">
+          <div className="text-sm font-semibold text-text-primary">Hosted demo is read-only</div>
+          <div className="text-xs text-text-muted leading-relaxed">
+            Triggering a live settlement is disabled on this hosted dashboard. Watch the 90-second
+            walkthrough in the{" "}
+            <a
+              href="https://github.com/tang-vu/tessera/blob/main/docs/tessera-demo.mp4"
+              className="text-accent hover:underline"
+            >
+              README
+            </a>
+            , or run locally / on testnet to trigger a settlement yourself.
           </div>
         </div>
       )}
