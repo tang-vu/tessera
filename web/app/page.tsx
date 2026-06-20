@@ -125,7 +125,7 @@ export default function HomePage() {
             <strong>Failed to load agents:</strong> {error}
             <br />
             <span className="text-text-muted text-xs mt-1 block">
-              Make sure anvil is running and CHAIN_ID/RPC_URL env vars are set.
+              Make sure the RPC is reachable and CHAIN_ID/RPC_URL env vars are set.
             </span>
           </div>
         )}

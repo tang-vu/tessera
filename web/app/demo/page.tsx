@@ -69,7 +69,7 @@ export default function DemoPage() {
           One-Click Settlement Loop
         </h1>
         <p className="text-text-secondary leading-relaxed">
-          Trigger a full settlement on Anvil: the Beacon agent builds a mandate chain,
+          Trigger a full settlement on HashKey Chain: the Beacon agent builds a mandate chain,
           generates a Gemini reasoning receipt, signs and anchors it on-chain, executes the
           USDC payment, and watches its credit score improve. Re-run to keep climbing.
         </p>
@@ -124,7 +124,7 @@ export default function DemoPage() {
           <div className="text-red-400 font-medium mb-1">Settlement failed</div>
           <div className="text-text-muted font-mono text-xs break-all">{error}</div>
           <div className="mt-3 text-xs text-text-muted">
-            Make sure anvil is running and <code className="font-mono text-text-secondary">DEPLOYER_PRIVATE_KEY</code> is set.
+            Make sure the RPC is reachable and <code className="font-mono text-text-secondary">DEPLOYER_PRIVATE_KEY</code> is set.
           </div>
         </div>
       )}

@@ -12,6 +12,8 @@ and lower fees — then turns reputation into a real **under-collateralized lend
 
 ## Screenshots
 
+▶️ **Demo video (90s, narrated + captioned):** [`docs/tessera-demo.mp4`](docs/tessera-demo.mp4) — a recorded walkthrough of the live loop: settle → reasoning receipt anchored → score updates on-chain → credit terms improve.
+
 | Agent directory | Agent detail — score history + anchored receipts |
 |---|---|
 | ![Agent directory](docs/screenshots/01-directory.png) | ![Agent detail](docs/screenshots/02-agent-atlas.png) |
