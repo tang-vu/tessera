@@ -118,6 +118,9 @@ NEXT_PUBLIC_CHAIN_ID=31337 NEXT_PUBLIC_RPC_URL=http://127.0.0.1:8545 pnpm web:de
 
 ## Deploy to HashKey testnet
 
+**Fast path:** fund the burner + fill `.env`, then `powershell -File scripts/deploy-hashkey.ps1` (deploys +
+verifies + seeds demo agents). Full checklist + troubleshooting: [`docs/deployment-guide.md`](docs/deployment-guide.md). Manual steps:
+
 1. Fund your burner with testnet HSK from the faucet: `https://faucet.hsk.xyz/faucet`.
 2. In `.env` set `DEPLOYER_PRIVATE_KEY` and `HSK_TESTNET_RPC=https://testnet.hsk.xyz`.
 3. Deploy (MockUSDC is deployed automatically on non-mainnet):
