@@ -1,0 +1,11 @@
+{
+  "AgentRegistry": "0x0260fA01254CB8747F9D4b754Dc940CFcF59b893",
+  "CreditLine": "0xae6B2f3Fe595028aEef6CC6685A0dC3D60acBA81",
+  "CreditPolicy": "0x03Ec5f56336CbE7ee18f77027ea9223d00AdCB66",
+  "ReceiptVerifier": "0x6A9064BB1B22671b6D6Fa01496d3e8432f70325A",
+  "ReputationOracle": "0xbeaf88Ac02152C03103fa8bD4df41D96fC2aE70C",
+  "SettlementHook": "0xcE2c673072dd3CE1De7F850B3Eb5e6499978429B",
+  "Stablecoin": "0x4317692a9fDd7004C3c5c9042034181B9100cF7B",
+  "chainId": 133,
+  "stablecoinIsMock": true
+}

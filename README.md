@@ -20,6 +20,26 @@ and lower fees — then turns reputation into a real **under-collateralized lend
 
 ---
 
+## Live on HashKey testnet
+
+Deployed and **source-verified** on HashKey Chain testnet (chainId 133) — click through to Blockscout:
+
+| Contract | Address (verified) |
+|---|---|
+| AgentRegistry | [`0x0260…b893`](https://testnet-explorer.hsk.xyz/address/0x0260fA01254CB8747F9D4b754Dc940CFcF59b893?tab=contract) |
+| ReceiptVerifier | [`0x6A90…325A`](https://testnet-explorer.hsk.xyz/address/0x6A9064BB1B22671b6D6Fa01496d3e8432f70325A?tab=contract) |
+| ReputationOracle | [`0xbeaf…E70C`](https://testnet-explorer.hsk.xyz/address/0xbeaf88Ac02152C03103fa8bD4df41D96fC2aE70C?tab=contract) |
+| CreditPolicy | [`0x03Ec…CB66`](https://testnet-explorer.hsk.xyz/address/0x03Ec5f56336CbE7ee18f77027ea9223d00AdCB66?tab=contract) |
+| SettlementHook | [`0xcE2c…429B`](https://testnet-explorer.hsk.xyz/address/0xcE2c673072dd3CE1De7F850B3Eb5e6499978429B?tab=contract) |
+| CreditLine | [`0xae6B…BA81`](https://testnet-explorer.hsk.xyz/address/0xae6B2f3Fe595028aEef6CC6685A0dC3D60acBA81?tab=contract) |
+| MockUSDC | [`0x4317…cF7B`](https://testnet-explorer.hsk.xyz/address/0x4317692a9fDd7004C3c5c9042034181B9100cF7B?tab=contract) |
+
+Seeded with 5 agents across all credit tiers (Atlas 900 · Beacon 700 · Dusk 620 · Cobalt 380 · Ember 140),
+a 200k-USDC lending pool, and a live 20k under-collateralized credit draw. The full deploy + seed cost
+**≈ 0.008 HSK (under $0.01)**. Mainnet deploy is the same command with `-Network mainnet`.
+
+---
+
 ## Why this matters
 
 HashKey's **White Paper 2.0** frames the AI-agent roadmap as three layers: **identity + credit + assets**

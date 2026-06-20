@@ -19,6 +19,9 @@ Get-Content $envFile | ForEach-Object {
     }
 }
 
+# Blockscout verification needs any non-empty key var; default it if .env omitted it.
+if (-not $env:HSK_EXPLORER_API_KEY) { [Environment]::SetEnvironmentVariable("HSK_EXPLORER_API_KEY", "blockscout") }
+
 # --- Network config ---
 if ($Network -eq "mainnet") {
     $chainId = "177"
