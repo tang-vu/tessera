@@ -10,12 +10,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.62.0",
     "@tessera/agent": "workspace:*",
     "next": "15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.15.3",
-    "viem": "^2.21.0"
+    "viem": "^2.21.0",
+    "wagmi": "^2.14.0"
   },
   "devDependencies": {
     "@types/node": "^22.7.0",

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { NavBar } from "@/components/nav-bar";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "Tessera — On-Chain Credit Bureau for AI Agents",
@@ -17,8 +18,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="min-h-screen bg-bg text-text-primary antialiased">
-        <NavBar />
-        <main className="pt-16">{children}</main>
+        <Providers>
+          <NavBar />
+          <main className="pt-16">{children}</main>
+        </Providers>
       </body>
     </html>
   );

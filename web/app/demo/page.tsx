@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useAccount } from "wagmi";
 import { DemoResult } from "@/components/demo-result";
+import { WalletSettlement } from "@/components/wallet-settlement";
 
 type DemoResultData = React.ComponentProps<typeof DemoResult>["result"];
 
@@ -35,6 +37,7 @@ export default function DemoPage() {
   const [result, setResult] = useState<DemoResultData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [runCount, setRunCount] = useState(0);
+  const { isConnected } = useAccount();
 
   async function handleSettle() {
     setStatus("running");
@@ -136,6 +139,26 @@ export default function DemoPage() {
           </div>
           <DemoResult result={result} />
         </>
+      )}
+
+      {/* Wallet path — divider + section, shown only when wallet connected */}
+      <div className="flex items-center gap-3 pt-2">
+        <div className="h-px flex-1 bg-border" />
+        <span className="text-xs text-text-muted uppercase tracking-wider">Or</span>
+        <div className="h-px flex-1 bg-border" />
+      </div>
+
+      {isConnected ? (
+        <WalletSettlement />
+      ) : (
+        <div className="rounded-card border border-border-subtle bg-surface-2/40 p-5 text-center">
+          <div className="text-sm font-medium text-text-secondary mb-1">
+            Run with your own wallet
+          </div>
+          <div className="text-xs text-text-muted">
+            Connect a wallet via the nav bar to sign and submit each step yourself.
+          </div>
+        </div>
       )}
     </div>
   );

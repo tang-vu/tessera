@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ConnectWallet } from "./connect-wallet";
 
 const NAV_LINKS = [
   { href: "/", label: "Agents" },
@@ -37,30 +38,35 @@ export function NavBar() {
           </span>
         </Link>
 
-        {/* Nav links */}
-        <nav className="flex items-center gap-1">
-          {NAV_LINKS.map(({ href, label }) => {
-            const isActive =
-              href === "/" ? pathname === "/" : pathname.startsWith(href);
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={[
-                  "relative px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
-                  isActive
-                    ? "text-text-primary bg-surface-2"
-                    : "text-text-secondary hover:text-text-primary hover:bg-surface-2/60",
-                ].join(" ")}
-              >
-                {label}
-                {href === "/demo" && (
-                  <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                )}
-              </Link>
-            );
-          })}
-        </nav>
+        {/* Nav links + wallet */}
+        <div className="flex items-center gap-1">
+          <nav className="flex items-center gap-1">
+            {NAV_LINKS.map(({ href, label }) => {
+              const isActive =
+                href === "/" ? pathname === "/" : pathname.startsWith(href);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={[
+                    "relative px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                    isActive
+                      ? "text-text-primary bg-surface-2"
+                      : "text-text-secondary hover:text-text-primary hover:bg-surface-2/60",
+                  ].join(" ")}
+                >
+                  {label}
+                  {href === "/demo" && (
+                    <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+          <div className="ml-2 pl-2 border-l border-border">
+            <ConnectWallet />
+          </div>
+        </div>
       </div>
     </header>
   );

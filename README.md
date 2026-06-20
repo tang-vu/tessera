@@ -10,6 +10,16 @@ and lower fees — then turns reputation into a real **under-collateralized lend
 
 ---
 
+## Screenshots
+
+| Agent directory | Agent detail — score history + anchored receipts |
+|---|---|
+| ![Agent directory](docs/screenshots/01-directory.png) | ![Agent detail](docs/screenshots/02-agent-atlas.png) |
+| **Live demo — one-click settlement loop** | **Credit pool — reputation-backed lending** |
+| ![Live demo](docs/screenshots/03-demo.png) | ![Credit pool](docs/screenshots/04-credit.png) |
+
+---
+
 ## Why this matters
 
 HashKey's **White Paper 2.0** frames the AI-agent roadmap as three layers: **identity + credit + assets**
@@ -171,6 +181,9 @@ terms + draws credit) and dishonest-agent (cut off) paths. Scoring math is inten
 - Known, accepted limitations for the demo model: receipt signatures are bound to the agent + settlement
   via the hashed trace contents (no separate EIP-712 domain); the settlement coordinator (owner) relays
   failure/dispute outcomes that, in production, come from HSP/arbitration.
+- EAS (Ethereum Attestation Service) was evaluated for receipt attestation but is **not deployed on HashKey
+  Chain**, so `ReceiptVerifier` serves as Tessera's native on-chain attestation registry (signed receipt
+  hash); an EAS adapter can be wired in if/when EAS launches on HashKey.
 - No secrets are committed; `.env` is gitignored — only `.env.example` is tracked. Use a fresh burner key for deploys.
 
 ## License
