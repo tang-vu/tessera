@@ -1,0 +1,8 @@
+# Keep the Vercel upload small + relevant (web build only needs web/ + agent/ + root manifests)
+contracts
+docs
+plans
+.github
+*.mp4
+agent/.receipts
+agent/.agents.json
