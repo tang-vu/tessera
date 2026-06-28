@@ -6,7 +6,6 @@ import {
   formatUsdc,
   formatFeeBps,
   shortHash,
-  shortAddress,
   tierFromScore,
 } from "@/lib/format-helpers";
 
@@ -52,73 +51,74 @@ export function DemoResult({ result }: DemoResultProps) {
   const isLocal = result.chainId === 31337;
 
   return (
-    <div className="space-y-5 animate-slide-up">
+    <div className="space-y-5">
       {/* Score jump */}
-      <div className="rounded-card border border-emerald-500/20 bg-emerald-500/5 p-6">
-        <div className="text-xs font-medium uppercase tracking-wider text-emerald-400/70 mb-4">
+      <div
+        className="card accent-line p-6"
+        style={{ ["--accent-line" as string]: "linear-gradient(90deg,#2dd4bf,#22d3ee)" }}
+      >
+        <div className="mb-5 text-xs font-semibold uppercase tracking-[0.16em] text-teal-300/80">
           Credit Score Updated
         </div>
-        <div className="flex items-end gap-6 flex-wrap">
+        <div className="flex flex-wrap items-end gap-8">
           {/* Before */}
           <div className="text-center">
-            <div className="text-xs text-text-muted mb-1">Before</div>
-            <div className="text-4xl font-bold tabular-nums text-text-secondary">
+            <div className="mb-1 text-xs text-text-muted">Before</div>
+            <div className="font-display text-4xl font-bold tabular-nums text-text-secondary">
               {result.scoreBefore}
             </div>
-            <div className="mt-1">
+            <div className="mt-1.5">
               <TierPill score={result.scoreBefore} size="sm" />
             </div>
           </div>
 
           {/* Arrow + delta */}
           <div className="flex flex-col items-center gap-1 pb-4">
-            <div
-              className={`text-lg font-bold tabular-nums ${delta >= 0 ? "text-emerald-400" : "text-red-400"}`}
-            >
+            <div className={`font-display text-lg font-bold tabular-nums ${delta >= 0 ? "text-teal-300" : "text-rose-300"}`}>
               {delta >= 0 ? "+" : ""}{delta}
             </div>
-            <svg width="32" height="14" viewBox="0 0 32 14" fill="none" className="text-emerald-400">
-              <path d="M0 7h28M22 1l8 6-8 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <svg width="36" height="14" viewBox="0 0 36 14" fill="none" className="text-teal-300">
+              <path d="M0 7h32M26 1l8 6-8 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
 
           {/* After */}
           <div className="text-center">
-            <div className="text-xs text-text-muted mb-1">After</div>
+            <div className="mb-1 text-xs text-text-muted">After</div>
             <div
-              className={`text-5xl font-bold tabular-nums text-emerald-400 transition-all duration-700 ${showScore ? "opacity-100 scale-100" : "opacity-0 scale-90"}`}
+              className={`font-display text-5xl font-bold tabular-nums text-teal-300 transition-all duration-700 ${showScore ? "scale-100 opacity-100" : "scale-90 opacity-0"}`}
+              style={{ textShadow: "0 0 28px rgba(45,212,191,0.5)" }}
             >
               {result.scoreAfter}
             </div>
-            <div className="mt-1">
+            <div className="mt-1.5">
               <TierPill score={result.scoreAfter} />
             </div>
           </div>
         </div>
 
-        {/* Tier upgrade banner */}
         {tierChanged && (
-          <div className="mt-4 rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 text-sm text-emerald-300">
+          <div className="mt-5 rounded-xl border border-teal-400/25 bg-teal-500/10 px-4 py-2.5 text-sm text-teal-200">
             Tier upgraded: <strong>{tierBefore}</strong> → <strong>{tierAfter}</strong>
           </div>
         )}
       </div>
 
       {/* Credit terms */}
-      <div className="rounded-card border border-border bg-surface p-5">
-        <div className="text-xs font-medium uppercase tracking-wider text-text-muted mb-3">
+      <div className="card p-5">
+        <div className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-text-secondary">
           New Credit Terms
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-lg bg-surface-2 px-4 py-3">
-            <div className="text-xs text-text-muted mb-1">Credit Limit</div>
-            <div className="text-lg font-bold text-accent">
+          <div className="rounded-xl border border-hairline bg-white/[0.02] px-4 py-3">
+            <div className="mb-1 text-xs text-text-muted">Credit Limit</div>
+            <div className="font-display text-lg font-bold text-gradient">
               {formatUsdc(result.terms.creditLimit)}
             </div>
           </div>
-          <div className="rounded-lg bg-surface-2 px-4 py-3">
-            <div className="text-xs text-text-muted mb-1">Fee Rate</div>
-            <div className="text-lg font-bold text-text-primary">
+          <div className="rounded-xl border border-hairline bg-white/[0.02] px-4 py-3">
+            <div className="mb-1 text-xs text-text-muted">Fee Rate</div>
+            <div className="font-display text-lg font-bold text-text-primary">
               {formatFeeBps(result.terms.feeBps)}
             </div>
           </div>
@@ -126,53 +126,51 @@ export function DemoResult({ result }: DemoResultProps) {
       </div>
 
       {/* Reasoning receipt */}
-      <div className="rounded-card border border-border bg-surface p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div className="text-xs font-medium uppercase tracking-wider text-text-muted">
+      <div className="card p-5">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="text-xs font-semibold uppercase tracking-[0.16em] text-text-secondary">
             Reasoning Receipt
           </div>
           <span
-            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold border ${
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${
               result.trace.decision === "APPROVE"
-                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                : "bg-red-500/10 text-red-400 border-red-500/20"
+                ? "border-teal-400/25 bg-teal-500/10 text-teal-300"
+                : "border-rose-400/25 bg-rose-500/10 text-rose-300"
             }`}
           >
-            <span className={`h-1.5 w-1.5 rounded-full ${result.trace.decision === "APPROVE" ? "bg-emerald-400" : "bg-red-400"}`} />
+            <span className={`h-1.5 w-1.5 rounded-full ${result.trace.decision === "APPROVE" ? "bg-teal-400" : "bg-rose-400"}`} />
             {result.trace.decision}
           </span>
         </div>
 
-        {/* Summary */}
-        <p className="text-sm text-text-secondary leading-relaxed mb-4">
+        <p className="mb-4 text-sm leading-relaxed text-text-secondary">
           {result.trace.summary}
         </p>
 
-        {/* Steps */}
         {result.trace.steps.length > 0 && (
-          <div className="space-y-2 mb-4">
+          <div className="mb-4 space-y-2">
             {result.trace.steps.map((step, i) => (
               <div key={i} className="flex gap-3 text-sm">
-                <span className="flex-shrink-0 h-5 w-5 rounded-full bg-surface-3 text-text-muted text-xs flex items-center justify-center font-mono">
+                <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-white/[0.06] font-mono text-xs text-text-muted">
                   {i + 1}
                 </span>
-                <span className="text-text-secondary leading-snug">{step}</span>
+                <span className="leading-snug text-text-secondary">{step}</span>
               </div>
             ))}
           </div>
         )}
 
         {/* Risk */}
-        <div className="rounded-lg bg-surface-2 px-3 py-2.5 mb-4">
+        <div className="mb-4 rounded-xl border border-hairline bg-white/[0.02] px-3 py-2.5">
           <div className="flex items-center gap-2 text-xs">
             <span className="text-text-muted">Risk:</span>
             <span
               className={`font-semibold capitalize ${
                 result.trace.risk.level === "low"
-                  ? "text-emerald-400"
+                  ? "text-teal-300"
                   : result.trace.risk.level === "medium"
-                  ? "text-amber-400"
-                  : "text-red-400"
+                  ? "text-amber-300"
+                  : "text-rose-300"
               }`}
             >
               {result.trace.risk.level}
@@ -205,8 +203,8 @@ export function DemoResult({ result }: DemoResultProps) {
           )}
         </div>
 
-        <div className="mt-3 text-xs text-text-muted flex items-center gap-2">
-          <span>Model: <span className="text-text-secondary font-mono">{result.trace.model}</span></span>
+        <div className="mt-3 flex items-center gap-2 text-xs text-text-muted">
+          <span>Model: <span className="font-mono text-text-secondary">{result.trace.model}</span></span>
           <span>·</span>
           <span>Backend: <span className="text-text-secondary">{result.storageBackend}</span></span>
         </div>
@@ -215,30 +213,22 @@ export function DemoResult({ result }: DemoResultProps) {
   );
 }
 
-function HashRow({
-  label,
-  value,
-  href,
-}: {
-  label: string;
-  value: string;
-  href?: string;
-}) {
+function HashRow({ label, value, href }: { label: string; value: string; href?: string }) {
   return (
     <div className="flex items-center gap-2 text-xs">
-      <span className="text-text-muted w-24 flex-shrink-0">{label}</span>
+      <span className="w-24 flex-shrink-0 text-text-muted">{label}</span>
       {href ? (
         <a
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-accent hover:underline truncate"
+          className="truncate text-iris hover:underline"
           title={value}
         >
           {shortHash(value)}
         </a>
       ) : (
-        <span className="text-text-secondary truncate" title={value}>
+        <span className="truncate text-text-secondary" title={value}>
           {shortHash(value)}
         </span>
       )}

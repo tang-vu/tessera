@@ -20,11 +20,16 @@ function LoopDiagram() {
   ];
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
       {steps.map((s, i) => (
-        <div key={i} className="rounded-lg border border-border-subtle bg-surface-2 p-3">
-          <div className="text-[10px] font-mono text-text-muted mb-1.5">{s.icon}</div>
-          <div className="text-sm font-medium text-text-primary leading-snug mb-0.5">{s.label}</div>
+        <div
+          key={i}
+          className="group relative rounded-xl border border-hairline bg-white/[0.02] p-3.5 transition-colors hover:border-hairline-strong"
+        >
+          <div className="mb-2 inline-flex h-6 w-6 items-center justify-center rounded-md bg-gradient-to-br from-iris/25 to-cyan/15 font-mono text-[10px] font-semibold text-iris ring-1 ring-iris/25">
+            {s.icon}
+          </div>
+          <div className="mb-0.5 text-sm font-medium leading-snug text-text-primary">{s.label}</div>
           <div className="text-xs text-text-muted">{s.sub}</div>
         </div>
       ))}
@@ -58,19 +63,19 @@ export default function DemoPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 sm:px-6 py-10 space-y-8">
+    <div className="mx-auto max-w-3xl space-y-8 px-4 py-12 sm:px-6">
       {/* Header */}
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-xs font-medium uppercase tracking-widest text-emerald-400">
+      <div className="fade-up">
+        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-hairline bg-surface/60 px-3 py-1 backdrop-blur-md">
+          <span className="h-1.5 w-1.5 rounded-full bg-teal-400 pulse-ring" />
+          <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-primary/85">
             Live Demo
           </span>
         </div>
-        <h1 className="text-3xl font-bold tracking-tight text-text-primary mb-3">
-          One-Click Settlement Loop
+        <h1 className="font-display text-4xl font-bold tracking-tight text-text-primary">
+          One-Click <span className="text-gradient">Settlement Loop</span>
         </h1>
-        <p className="text-text-secondary leading-relaxed">
+        <p className="mt-3 leading-relaxed text-text-secondary">
           Trigger a full settlement on HashKey Chain: the Beacon agent builds a mandate chain,
           generates a Gemini reasoning receipt, signs and anchors it on-chain, executes the
           USDC payment, and watches its credit score improve. Re-run to keep climbing.
@@ -78,8 +83,8 @@ export default function DemoPage() {
       </div>
 
       {/* Loop diagram */}
-      <div className="rounded-card border border-border bg-surface p-5">
-        <div className="text-xs font-medium uppercase tracking-wider text-text-muted mb-4">
+      <div className="card fade-up p-5 sm:p-6">
+        <div className="mb-4 font-display text-xs font-semibold uppercase tracking-[0.16em] text-text-secondary">
           The Settlement Loop
         </div>
         <LoopDiagram />
@@ -93,11 +98,10 @@ export default function DemoPage() {
           onClick={() => void handleSettle()}
           disabled={status === "running"}
           className={[
-            "relative px-8 py-4 rounded-xl text-base font-semibold transition-all duration-200",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+            "rounded-2xl px-8 py-4 text-base font-semibold transition-all duration-200",
             status === "running"
-              ? "bg-surface-2 text-text-muted border border-border cursor-not-allowed"
-              : "bg-accent hover:bg-accent-dim text-white shadow-glow hover:shadow-lg active:scale-[0.98]",
+              ? "cursor-not-allowed border border-hairline bg-surface text-text-muted"
+              : "btn-primary",
           ].join(" ")}
         >
           {status === "running" ? (
@@ -124,9 +128,9 @@ export default function DemoPage() {
 
       {/* Error state */}
       {status === "error" && error && (
-        <div className="rounded-card border border-red-500/20 bg-red-500/5 p-5 text-sm">
-          <div className="text-red-400 font-medium mb-1">Settlement failed</div>
-          <div className="text-text-muted font-mono text-xs break-all">{error}</div>
+        <div className="card p-5 text-sm" style={{ ["--accent-line" as string]: "linear-gradient(90deg,#fb7185,transparent)" }}>
+          <div className="mb-1 font-medium text-rose-300">Settlement failed</div>
+          <div className="break-all font-mono text-xs text-text-muted">{error}</div>
           <div className="mt-3 text-xs text-text-muted">
             Make sure the RPC is reachable and <code className="font-mono text-text-secondary">DEPLOYER_PRIVATE_KEY</code> is set.
           </div>
@@ -136,27 +140,19 @@ export default function DemoPage() {
       {/* Result */}
       {status === "done" && result && (
         <>
-          <div className="flex items-center gap-3">
-            <div className="h-px flex-1 bg-border" />
-            <span className="text-xs text-text-muted uppercase tracking-wider">Result #{runCount}</span>
-            <div className="h-px flex-1 bg-border" />
-          </div>
+          <Divider label={`Result #${runCount}`} />
           <DemoResult result={result} />
         </>
       )}
 
-      {/* Wallet path — divider + section, shown only when wallet connected */}
-      <div className="flex items-center gap-3 pt-2">
-        <div className="h-px flex-1 bg-border" />
-        <span className="text-xs text-text-muted uppercase tracking-wider">Or</span>
-        <div className="h-px flex-1 bg-border" />
-      </div>
+      {/* Wallet path */}
+      <Divider label="Or" />
 
       {isConnected ? (
         <WalletSettlement />
       ) : (
-        <div className="rounded-card border border-border-subtle bg-surface-2/40 p-5 text-center">
-          <div className="text-sm font-medium text-text-secondary mb-1">
+        <div className="card p-5 text-center">
+          <div className="mb-1 text-sm font-medium text-text-secondary">
             Run with your own wallet
           </div>
           <div className="text-xs text-text-muted">
@@ -166,14 +162,14 @@ export default function DemoPage() {
       )}
       </>
       ) : (
-        <div className="rounded-card border border-border-subtle bg-surface-2/40 p-6 text-center space-y-2">
+        <div className="card accent-line space-y-2 p-6 text-center">
           <div className="text-sm font-semibold text-text-primary">Hosted demo is read-only</div>
-          <div className="text-xs text-text-muted leading-relaxed">
+          <div className="text-xs leading-relaxed text-text-muted">
             Triggering a live settlement is disabled on this hosted dashboard. Watch the 90-second
             walkthrough in the{" "}
             <a
               href="https://github.com/tang-vu/tessera/blob/main/docs/tessera-demo.mp4"
-              className="text-accent hover:underline"
+              className="text-iris hover:underline"
             >
               README
             </a>
@@ -181,6 +177,16 @@ export default function DemoPage() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function Divider({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="h-px flex-1 bg-gradient-to-r from-transparent to-hairline-strong" />
+      <span className="text-xs uppercase tracking-[0.16em] text-text-muted">{label}</span>
+      <div className="h-px flex-1 bg-gradient-to-l from-transparent to-hairline-strong" />
     </div>
   );
 }

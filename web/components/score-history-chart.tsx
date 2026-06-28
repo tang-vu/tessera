@@ -32,23 +32,23 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: Toolti
   if (!d) return null;
 
   const deltaSign = d.delta >= 0 ? "+" : "";
-  const deltaColor = d.delta >= 0 ? "text-emerald-400" : "text-red-400";
+  const deltaColor = d.delta >= 0 ? "text-teal-300" : "text-rose-300";
 
   return (
-    <div className="rounded-lg border border-border bg-surface-2 px-3 py-2.5 shadow-xl text-sm min-w-[180px]">
-      <div className="flex items-center justify-between gap-4 mb-1">
-        <span className="text-text-secondary text-xs">Score</span>
-        <span className="font-bold text-text-primary tabular-nums">{d.newScore}</span>
+    <div className="glass-strong min-w-[180px] rounded-xl px-3 py-2.5 text-sm shadow-xl">
+      <div className="mb-1 flex items-center justify-between gap-4">
+        <span className="text-xs text-text-secondary">Score</span>
+        <span className="font-display font-bold tabular-nums text-text-primary">{d.newScore}</span>
       </div>
-      <div className="flex items-center justify-between gap-4 mb-2">
-        <span className="text-text-secondary text-xs">Delta</span>
+      <div className="mb-2 flex items-center justify-between gap-4">
+        <span className="text-xs text-text-secondary">Delta</span>
         <span className={`font-semibold tabular-nums ${deltaColor}`}>
           {deltaSign}{d.delta}
         </span>
       </div>
       {d.reason && (
-        <div className="border-t border-border pt-1.5">
-          <p className="text-text-muted text-xs leading-relaxed">{d.reason}</p>
+        <div className="border-t border-hairline pt-1.5">
+          <p className="text-xs leading-relaxed text-text-muted">{d.reason}</p>
         </div>
       )}
     </div>
@@ -75,9 +75,9 @@ export function ScoreHistoryChart({ events, currentScore }: ScoreHistoryChartPro
 
   // Tier reference lines
   const TIER_LINES = [
-    { value: 200, label: "Emerging", color: "#f59e0b" },
-    { value: 500, label: "Established", color: "#3b82f6" },
-    { value: 800, label: "Prime", color: "#10b981" },
+    { value: 200, label: "Emerging", color: "#fbbf24" },
+    { value: 500, label: "Established", color: "#818cf8" },
+    { value: 800, label: "Prime", color: "#2dd4bf" },
   ];
 
   return (
@@ -85,26 +85,30 @@ export function ScoreHistoryChart({ events, currentScore }: ScoreHistoryChartPro
       <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -16 }}>
         <defs>
           <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.02} />
+            <stop offset="5%" stopColor="#a855f7" stopOpacity={0.35} />
+            <stop offset="95%" stopColor="#7c83ff" stopOpacity={0.02} />
+          </linearGradient>
+          <linearGradient id="scoreStroke" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#7c83ff" />
+            <stop offset="100%" stopColor="#22d3ee" />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="#252b38" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
         <XAxis
           dataKey="index"
           tickFormatter={(v: number) => (v < 0 ? "Start" : `#${v + 1}`)}
-          tick={{ fill: "#4a5068", fontSize: 11 }}
+          tick={{ fill: "#5a607e", fontSize: 11 }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
           domain={[minScore, maxScore]}
-          tick={{ fill: "#4a5068", fontSize: 11 }}
+          tick={{ fill: "#5a607e", fontSize: 11 }}
           axisLine={false}
           tickLine={false}
           width={40}
         />
-        <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#3b82f6", strokeWidth: 1, strokeDasharray: "4 4" }} />
+        <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#7c83ff", strokeWidth: 1, strokeDasharray: "4 4" }} />
         {TIER_LINES.filter((t) => t.value >= minScore && t.value <= maxScore).map((t) => (
           <ReferenceLine
             key={t.value}
@@ -118,11 +122,11 @@ export function ScoreHistoryChart({ events, currentScore }: ScoreHistoryChartPro
         <Area
           type="monotone"
           dataKey="newScore"
-          stroke="#3b82f6"
-          strokeWidth={2}
+          stroke="url(#scoreStroke)"
+          strokeWidth={2.5}
           fill="url(#scoreGradient)"
-          dot={{ fill: "#3b82f6", r: 3, strokeWidth: 0 }}
-          activeDot={{ fill: "#60a5fa", r: 5, strokeWidth: 0 }}
+          dot={{ fill: "#a855f7", r: 3, strokeWidth: 0 }}
+          activeDot={{ fill: "#22d3ee", r: 5, strokeWidth: 0 }}
         />
       </AreaChart>
     </ResponsiveContainer>

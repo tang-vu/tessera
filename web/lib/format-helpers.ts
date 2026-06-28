@@ -33,31 +33,45 @@ export function tierFromScore(score: number): Tier {
   return "Untrusted";
 }
 
-/** Tailwind class name tokens for each tier. */
-export const TIER_STYLES: Record<Tier, { text: string; bg: string; border: string; dot: string }> = {
+/**
+ * Per-tier style tokens. `hex` is the single source of truth for the tier hue
+ * (consumed by the score ring + history chart); the class tokens drive pills.
+ */
+export const TIER_STYLES: Record<
+  Tier,
+  { text: string; bg: string; border: string; dot: string; hex: string; glow: string }
+> = {
   Untrusted: {
-    text: "text-red-400",
-    bg: "bg-red-500/10",
-    border: "border-red-500/20",
-    dot: "bg-red-400",
+    text: "text-rose-300",
+    bg: "bg-rose-500/10",
+    border: "border-rose-400/25",
+    dot: "bg-rose-400",
+    hex: "#fb7185",
+    glow: "rgba(251,113,133,0.45)",
   },
   Emerging: {
-    text: "text-amber-400",
+    text: "text-amber-300",
     bg: "bg-amber-500/10",
-    border: "border-amber-500/20",
+    border: "border-amber-400/25",
     dot: "bg-amber-400",
+    hex: "#fbbf24",
+    glow: "rgba(251,191,36,0.45)",
   },
   Established: {
-    text: "text-blue-400",
-    bg: "bg-blue-500/10",
-    border: "border-blue-500/20",
-    dot: "bg-blue-400",
+    text: "text-indigo-300",
+    bg: "bg-indigo-500/10",
+    border: "border-indigo-400/25",
+    dot: "bg-indigo-400",
+    hex: "#818cf8",
+    glow: "rgba(129,140,248,0.45)",
   },
   Prime: {
-    text: "text-emerald-400",
-    bg: "bg-emerald-500/10",
-    border: "border-emerald-500/20",
-    dot: "bg-emerald-400",
+    text: "text-teal-300",
+    bg: "bg-teal-500/10",
+    border: "border-teal-400/25",
+    dot: "bg-teal-400",
+    hex: "#2dd4bf",
+    glow: "rgba(45,212,191,0.5)",
   },
 };
 

@@ -10,14 +10,25 @@ const NAV_LINKS = [
   { href: "/demo", label: "Live Demo" },
 ];
 
+/** Tessellated 4-tile mark — the brand's mosaic motif, with a drifting sheen. */
 function TesseraLogo() {
   return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect x="2" y="2" width="9" height="9" rx="2" fill="#3b82f6" opacity="0.9" />
-      <rect x="13" y="2" width="9" height="9" rx="2" fill="#3b82f6" opacity="0.5" />
-      <rect x="2" y="13" width="9" height="9" rx="2" fill="#3b82f6" opacity="0.5" />
-      <rect x="13" y="13" width="9" height="9" rx="2" fill="#3b82f6" opacity="0.2" />
-    </svg>
+    <span className="relative grid h-8 w-8 place-items-center rounded-[9px] bg-bg-2 ring-1 ring-hairline-strong">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="navlogo" x1="0" y1="0" x2="24" y2="24" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#7c83ff" />
+            <stop offset="0.55" stopColor="#a855f7" />
+            <stop offset="1" stopColor="#22d3ee" />
+          </linearGradient>
+        </defs>
+        <rect x="2" y="2" width="9" height="9" rx="2.5" fill="url(#navlogo)" />
+        <rect x="13" y="2" width="9" height="9" rx="2.5" fill="url(#navlogo)" opacity="0.55" />
+        <rect x="2" y="13" width="9" height="9" rx="2.5" fill="url(#navlogo)" opacity="0.55" />
+        <rect x="13" y="13" width="9" height="9" rx="2.5" fill="url(#navlogo)" opacity="0.25" />
+      </svg>
+      <span className="pointer-events-none absolute -inset-2 rounded-full bg-iris/20 blur-xl opacity-60" />
+    </span>
   );
 }
 
@@ -25,22 +36,22 @@ export function NavBar() {
   const pathname = usePathname();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-bg/90 backdrop-blur-sm">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-hairline bg-bg/70 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         {/* Logo + wordmark */}
-        <Link href="/" className="flex items-center gap-2.5 group">
+        <Link href="/" className="group flex items-center gap-2.5">
           <TesseraLogo />
-          <span className="text-lg font-semibold tracking-tight text-text-primary group-hover:text-accent transition-colors">
+          <span className="font-display text-lg font-semibold tracking-tight text-text-primary transition-colors group-hover:text-gradient">
             Tessera
           </span>
-          <span className="hidden sm:inline-block rounded px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-widest bg-accent/10 text-accent border border-accent/20">
+          <span className="hidden rounded-full border border-iris/25 bg-iris/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-iris sm:inline-block">
             Testnet
           </span>
         </Link>
 
         {/* Nav links + wallet */}
         <div className="flex items-center gap-1">
-          <nav className="flex items-center gap-1">
+          <nav className="flex items-center gap-0.5 rounded-full border border-hairline bg-surface/60 p-1 backdrop-blur-md">
             {NAV_LINKS.map(({ href, label }) => {
               const isActive =
                 href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -49,21 +60,26 @@ export function NavBar() {
                   key={href}
                   href={href}
                   className={[
-                    "relative px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+                    "relative rounded-full px-3.5 py-1.5 text-sm font-medium transition-all",
                     isActive
-                      ? "text-text-primary bg-surface-2"
-                      : "text-text-secondary hover:text-text-primary hover:bg-surface-2/60",
+                      ? "text-text-primary"
+                      : "text-text-secondary hover:text-text-primary",
                   ].join(" ")}
                 >
-                  {label}
-                  {href === "/demo" && (
-                    <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  {isActive && (
+                    <span className="absolute inset-0 rounded-full bg-gradient-to-r from-iris/20 to-cyan/15 ring-1 ring-iris/30" />
                   )}
+                  <span className="relative inline-flex items-center">
+                    {label}
+                    {href === "/demo" && (
+                      <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-teal-400 pulse-ring" />
+                    )}
+                  </span>
                 </Link>
               );
             })}
           </nav>
-          <div className="ml-2 pl-2 border-l border-border">
+          <div className="ml-2 pl-2">
             <ConnectWallet />
           </div>
         </div>

@@ -10,7 +10,6 @@ import {
   agentNameFromUri,
   shortAddress,
   formatTimestamp,
-  tierFromScore,
   TIER_STYLES,
 } from "@/lib/format-helpers";
 import type { CreditPoolResponse, CreditTier, AgentLoan } from "@/app/api/credit/route";
@@ -40,79 +39,68 @@ export default function CreditPage() {
   }, [fetchCredit]);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 sm:px-6 py-10 space-y-8">
+    <div className="mx-auto max-w-5xl space-y-8 px-4 py-12 sm:px-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-text-primary mb-2">
-          Credit Pool
+      <div className="fade-up">
+        <h1 className="font-display text-4xl font-bold tracking-tight text-text-primary">
+          Credit <span className="text-gradient">Pool</span>
         </h1>
-        <p className="text-text-secondary">
-          Under-collateralized lending pool powered by on-chain reputation scores.
-          Agents with higher scores unlock larger credit limits and lower fees.
+        <p className="mt-3 max-w-2xl text-text-secondary">
+          An under-collateralized lending pool powered by on-chain reputation.
+          Agents with higher scores unlock larger credit limits and lower fees —
+          the on-chain track record <em className="font-serif-italic not-italic">is</em> the collateral.
         </p>
       </div>
 
       {error && (
-        <div className="rounded-card border border-red-500/20 bg-red-500/5 p-5 text-red-400 text-sm">
+        <div className="card p-5 text-sm text-rose-300" style={{ ["--accent-line" as string]: "linear-gradient(90deg,#fb7185,transparent)" }}>
           {error}
         </div>
       )}
 
       {loading && (
-        <div className="space-y-4 animate-pulse">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="rounded-card border border-border bg-surface h-24" />
+              <div key={i} className="card h-24" />
             ))}
           </div>
-          <div className="rounded-card border border-border bg-surface h-48" />
+          <div className="card h-48" />
         </div>
       )}
 
       {data && (
         <>
           {/* Pool stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <StatCard
-              label="Total Assets (TVL)"
-              value={formatUsdc(data.totalAssets)}
-              sub="pool deposits"
-              accent
-            />
-            <StatCard
-              label="Available Cash"
-              value={formatUsdc(data.cash)}
-              sub="liquid reserves"
-            />
-            <StatCard
-              label="Principal Out"
-              value={formatUsdc(data.totalPrincipalOut)}
-              sub="borrowed capital"
-            />
-            <StatCard
-              label="Utilization"
-              value={`${(data.utilizationBps / 100).toFixed(1)}%`}
-              sub={`${data.utilizationBps} bps`}
-            />
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <StatCard label="Total Assets (TVL)" value={formatUsdc(data.totalAssets)} sub="pool deposits" accent />
+            <StatCard label="Available Cash" value={formatUsdc(data.cash)} sub="liquid reserves" />
+            <StatCard label="Principal Out" value={formatUsdc(data.totalPrincipalOut)} sub="borrowed capital" />
+            <StatCard label="Utilization" value={`${(data.utilizationBps / 100).toFixed(1)}%`} sub={`${data.utilizationBps} bps`} />
           </div>
 
           {/* Utilization bar */}
-          <div className="rounded-card border border-border bg-surface p-5">
-            <div className="flex items-center justify-between mb-3 text-xs text-text-muted">
-              <span className="font-medium uppercase tracking-wider">Pool Utilization</span>
-              <span className="tabular-nums">{(data.utilizationBps / 100).toFixed(2)}%</span>
+          <div className="card accent-line p-5 sm:p-6">
+            <div className="mb-3 flex items-center justify-between text-xs text-text-muted">
+              <span className="font-display font-semibold uppercase tracking-[0.16em]">Pool Utilization</span>
+              <span className="tabular-nums text-text-secondary">{(data.utilizationBps / 100).toFixed(2)}%</span>
             </div>
-            <div className="h-2.5 w-full rounded-full bg-surface-3 overflow-hidden">
+            <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
               <div
-                className={[
-                  "h-full rounded-full transition-all duration-700",
-                  data.utilizationBps > 8000 ? "bg-red-400" :
-                  data.utilizationBps > 5000 ? "bg-amber-400" : "bg-accent",
-                ].join(" ")}
-                style={{ width: `${Math.min(100, data.utilizationBps / 100)}%` }}
+                className="h-full rounded-full transition-all duration-700"
+                style={{
+                  width: `${Math.min(100, data.utilizationBps / 100)}%`,
+                  background:
+                    data.utilizationBps > 8000
+                      ? "linear-gradient(90deg,#fb7185,#f43f5e)"
+                      : data.utilizationBps > 5000
+                      ? "linear-gradient(90deg,#fbbf24,#f59e0b)"
+                      : "linear-gradient(90deg,#7c83ff,#22d3ee)",
+                  boxShadow: "0 0 14px rgba(124,131,255,0.4)",
+                }}
               />
             </div>
-            <div className="flex justify-between mt-1.5 text-[10px] text-text-muted">
+            <div className="mt-1.5 flex justify-between text-[10px] text-text-muted">
               <span>0%</span>
               <span>50%</span>
               <span>100%</span>
@@ -120,36 +108,30 @@ export default function CreditPage() {
           </div>
 
           {/* Tier table */}
-          <div className="rounded-card border border-border bg-surface p-5">
-            <h2 className="text-xs font-medium uppercase tracking-wider text-text-muted mb-4">
-              Credit Tiers
-            </h2>
+          <Panel title="Credit Tiers">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs text-text-muted border-b border-border">
-                    <th className="pb-3 font-medium pr-6">Tier</th>
-                    <th className="pb-3 font-medium pr-6">Min Score</th>
-                    <th className="pb-3 font-medium pr-6">Credit Limit</th>
+                  <tr className="border-b border-hairline text-left text-xs text-text-muted">
+                    <th className="pb-3 pr-6 font-medium">Tier</th>
+                    <th className="pb-3 pr-6 font-medium">Min Score</th>
+                    <th className="pb-3 pr-6 font-medium">Credit Limit</th>
                     <th className="pb-3 font-medium">Fee Rate</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border-subtle">
+                <tbody className="divide-y divide-hairline">
                   {data.tiers.map((tier, i) => (
                     <TierRow key={i} tier={tier} />
                   ))}
                 </tbody>
               </table>
             </div>
-          </div>
+          </Panel>
 
           {/* Active loans */}
-          <div className="rounded-card border border-border bg-surface p-5">
-            <h2 className="text-xs font-medium uppercase tracking-wider text-text-muted mb-4">
-              Active Loans ({data.loans.length})
-            </h2>
+          <Panel title={`Active Loans (${data.loans.length})`}>
             {data.loans.length === 0 ? (
-              <p className="text-sm text-text-muted py-4 text-center">
+              <p className="py-4 text-center text-sm text-text-muted">
                 No active loans — agents have not borrowed yet.
               </p>
             ) : (
@@ -159,36 +141,55 @@ export default function CreditPage() {
                 ))}
               </div>
             )}
-          </div>
+          </Panel>
 
           {/* Mechanism explainer */}
-          <div className="rounded-card border border-border-subtle bg-surface-2/40 p-5">
-            <h2 className="text-xs font-medium uppercase tracking-wider text-text-muted mb-3">
-              How Borrowing Works
-            </h2>
-            <div className="grid sm:grid-cols-3 gap-4 text-sm text-text-secondary">
-              <div>
-                <div className="font-medium text-text-primary mb-1">Reputation-gated</div>
-                Score determines credit limit. Run settlements, improve your score, unlock more capital.
-              </div>
-              <div>
-                <div className="font-medium text-text-primary mb-1">Under-collateralized</div>
-                No over-collateralization required — on-chain track record is the collateral.
-              </div>
-              <div>
-                <div className="font-medium text-text-primary mb-1">Automated enforcement</div>
-                Missed repayments trigger score penalties and default marking, raising fees for future loans.
-              </div>
+          <Panel title="How Borrowing Works">
+            <div className="grid gap-5 text-sm text-text-secondary sm:grid-cols-3">
+              <Mechanism
+                title="Reputation-gated"
+                body="Score determines credit limit. Run settlements, improve your score, unlock more capital."
+              />
+              <Mechanism
+                title="Under-collateralized"
+                body="No over-collateralization required — on-chain track record is the collateral."
+              />
+              <Mechanism
+                title="Automated enforcement"
+                body="Missed repayments trigger score penalties and default marking, raising fees for future loans."
+              />
             </div>
-          </div>
+          </Panel>
         </>
       )}
     </div>
   );
 }
 
+function Panel({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="card p-5 sm:p-6">
+      <h2 className="mb-4 font-display text-xs font-semibold uppercase tracking-[0.16em] text-text-secondary">
+        {title}
+      </h2>
+      {children}
+    </div>
+  );
+}
+
+function Mechanism({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="rounded-xl border border-hairline bg-white/[0.02] p-4">
+      <div className="mb-1.5 flex items-center gap-2 font-medium text-text-primary">
+        <span className="h-1.5 w-1.5 rounded-full bg-gradient-to-r from-iris to-cyan" />
+        {title}
+      </div>
+      {body}
+    </div>
+  );
+}
+
 function TierRow({ tier }: { tier: CreditTier }) {
-  // Map minScore to our tier labels
   const label =
     tier.minScore >= 800 ? "Prime" :
     tier.minScore >= 500 ? "Established" :
@@ -200,7 +201,7 @@ function TierRow({ tier }: { tier: CreditTier }) {
       <td className="py-3 pr-6">
         <span
           className={[
-            "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold border",
+            "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold",
             styles.bg, styles.text, styles.border,
           ].join(" ")}
         >
@@ -218,29 +219,29 @@ function TierRow({ tier }: { tier: CreditTier }) {
 function LoanRow({ loan }: { loan: AgentLoan }) {
   const name = agentNameFromUri(loan.uri, loan.agentId);
   return (
-    <div className="rounded-lg border border-border-subtle bg-surface-2 p-4">
-      <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+    <div className="rounded-xl border border-hairline bg-white/[0.02] p-4 transition-colors hover:border-hairline-strong">
+      <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
         <div>
           <Link
             href={`/agent/${loan.agentId}`}
-            className="font-medium text-text-primary hover:text-accent transition-colors text-sm"
+            className="text-sm font-medium text-text-primary transition-colors hover:text-iris"
           >
             {name}
           </Link>
-          <div className="text-xs font-mono text-text-muted mt-0.5">
+          <div className="mt-0.5 font-mono text-xs text-text-muted">
             #{loan.agentId} · {shortAddress(loan.controller)}
           </div>
         </div>
         <div className="flex items-center gap-2">
           <TierPill score={loan.score} size="sm" />
           {loan.defaulted && (
-            <span className="rounded-full px-2 py-0.5 text-xs bg-red-500/10 text-red-400 border border-red-500/20">
+            <span className="rounded-full border border-rose-400/25 bg-rose-500/10 px-2 py-0.5 text-xs text-rose-300">
               Defaulted
             </span>
           )}
         </div>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+      <div className="grid grid-cols-2 gap-3 text-xs sm:grid-cols-4">
         <LoanStat label="Principal" value={formatUsdc(loan.principal)} />
         <LoanStat label="Fee Owed" value={formatUsdc(loan.feeOwed)} />
         <LoanStat
@@ -254,19 +255,11 @@ function LoanRow({ loan }: { loan: AgentLoan }) {
   );
 }
 
-function LoanStat({
-  label,
-  value,
-  warn = false,
-}: {
-  label: string;
-  value: string;
-  warn?: boolean;
-}) {
+function LoanStat({ label, value, warn = false }: { label: string; value: string; warn?: boolean }) {
   return (
     <div>
-      <div className="text-text-muted mb-0.5">{label}</div>
-      <div className={`font-medium ${warn ? "text-red-400" : "text-text-primary"}`}>{value}</div>
+      <div className="mb-0.5 text-text-muted">{label}</div>
+      <div className={`font-medium ${warn ? "text-rose-300" : "text-text-primary"}`}>{value}</div>
     </div>
   );
 }

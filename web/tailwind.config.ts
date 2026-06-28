@@ -9,70 +9,76 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Base surfaces
-        bg: "#0a0b0d",
-        surface: "#111318",
-        "surface-2": "#181c23",
-        "surface-3": "#1e2330",
-        border: "#252b38",
-        "border-subtle": "#1a1f2a",
+        // Base obsidian + glass layers (see globals.css :root)
+        bg: "#070810",
+        "bg-2": "#0a0c16",
+        surface: "rgba(255,255,255,0.025)",
+        "surface-2": "rgba(255,255,255,0.045)",
+        "surface-3": "rgba(255,255,255,0.07)",
+        hairline: "rgba(255,255,255,0.08)",
+        "hairline-strong": "rgba(255,255,255,0.14)",
         // Text
-        "text-primary": "#e8eaf0",
-        "text-secondary": "#8b92a8",
-        "text-muted": "#4a5068",
-        // Accent
-        accent: "#3b82f6",
-        "accent-dim": "#1d4ed8",
-        "accent-glow": "rgba(59,130,246,0.15)",
-        // Tier colors
+        "text-primary": "#eef0fb",
+        "text-secondary": "#9aa0c0",
+        "text-muted": "#5a607e",
+        // Brand duotone + gold
+        iris: "#7c83ff",
+        violet: "#a855f7",
+        cyan: "#22d3ee",
+        gold: "#e9c98a",
+        // Back-compat accent aliases (map to iris)
+        accent: "#7c83ff",
+        "accent-dim": "#6366f1",
+        // Tier hues
         tier: {
-          untrusted: "#ef4444",
-          emerging: "#f59e0b",
-          established: "#3b82f6",
-          prime: "#10b981",
-        },
-        // Tier bg (subtle)
-        "tier-bg": {
-          untrusted: "rgba(239,68,68,0.12)",
-          emerging: "rgba(245,158,11,0.12)",
-          established: "rgba(59,130,246,0.12)",
-          prime: "rgba(16,185,129,0.12)",
+          untrusted: "#fb7185",
+          emerging: "#fbbf24",
+          established: "#818cf8",
+          prime: "#2dd4bf",
         },
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
+        display: ["Space Grotesk", "Inter", "sans-serif"],
+        serif: ["Instrument Serif", "Georgia", "serif"],
         mono: ["JetBrains Mono", "Fira Code", "ui-monospace", "monospace"],
       },
       borderRadius: {
-        card: "12px",
+        card: "18px",
+        xl2: "22px",
       },
       boxShadow: {
-        card: "0 1px 3px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.04)",
-        "card-hover": "0 4px 16px rgba(0,0,0,0.5), 0 0 0 1px rgba(59,130,246,0.2)",
-        glow: "0 0 24px rgba(59,130,246,0.15)",
+        card: "0 8px 30px -16px rgba(0,0,0,0.7)",
+        "card-hover": "0 18px 50px -20px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.14)",
+        glow: "0 12px 40px -12px rgba(124,131,255,0.5)",
+        "glow-cyan": "0 12px 40px -12px rgba(34,211,238,0.45)",
+      },
+      backgroundImage: {
+        "brand-grad": "linear-gradient(110deg,#7c83ff,#a855f7 60%,#22d3ee)",
+        "gold-grad": "linear-gradient(105deg,#fff6df,#e9c98a 45%,#c79a4e)",
       },
       animation: {
-        "score-up": "scoreUp 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards",
-        "fade-in": "fadeIn 0.4s ease forwards",
-        "slide-up": "slideUp 0.4s ease forwards",
+        "fade-up": "fadeUp 0.6s cubic-bezier(0.22,1,0.36,1) forwards",
+        "score-up": "scoreCountUp 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards",
+        float: "float 5s ease-in-out infinite",
         pulse2: "pulse2 2s ease-in-out infinite",
       },
       keyframes: {
-        scoreUp: {
-          "0%": { transform: "scale(0.8)", opacity: "0" },
-          "100%": { transform: "scale(1)", opacity: "1" },
-        },
-        fadeIn: {
-          "0%": { opacity: "0" },
-          "100%": { opacity: "1" },
-        },
-        slideUp: {
-          "0%": { transform: "translateY(12px)", opacity: "0" },
+        fadeUp: {
+          "0%": { transform: "translateY(16px)", opacity: "0" },
           "100%": { transform: "translateY(0)", opacity: "1" },
         },
+        scoreCountUp: {
+          "0%": { transform: "translateY(10px) scale(0.94)", opacity: "0" },
+          "100%": { transform: "translateY(0) scale(1)", opacity: "1" },
+        },
+        float: {
+          "0%,100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-5px)" },
+        },
         pulse2: {
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.5" },
+          "0%,100%": { opacity: "1" },
+          "50%": { opacity: "0.45" },
         },
       },
     },

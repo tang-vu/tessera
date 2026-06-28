@@ -224,19 +224,19 @@ export function WalletSettlement() {
   }
 
   return (
-    <div className="rounded-card border border-border bg-surface p-5 space-y-5">
+    <div className="card space-y-5 p-5">
       {/* Section header */}
       <div className="flex items-center justify-between">
         <div>
-          <div className="text-xs font-medium uppercase tracking-wider text-text-muted mb-1">
+          <div className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-text-muted">
             Wallet Path
           </div>
           <div className="text-sm font-semibold text-text-primary">
             Run with my connected wallet
           </div>
         </div>
-        <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-400/25 bg-teal-500/10 px-2.5 py-1 font-mono text-xs font-medium text-teal-300">
+          <span className="h-1.5 w-1.5 rounded-full bg-teal-400" />
           {shortAddress(address!)}
         </span>
       </div>
@@ -251,11 +251,10 @@ export function WalletSettlement() {
         onClick={() => void handleWalletSettle()}
         disabled={status === "running"}
         className={[
-          "w-full px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-200",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
+          "w-full rounded-xl px-6 py-3 text-sm font-semibold transition-all duration-200",
           status === "running"
-            ? "bg-surface-2 text-text-muted border border-border cursor-not-allowed"
-            : "bg-accent/10 hover:bg-accent/20 text-accent border border-accent/30 hover:border-accent/50",
+            ? "cursor-not-allowed border border-hairline bg-surface text-text-muted"
+            : "border border-iris/30 bg-iris/10 text-iris hover:border-iris/50 hover:bg-iris/20",
         ].join(" ")}
       >
         {status === "running" ? (
@@ -290,9 +289,9 @@ export function WalletSettlement() {
 
       {/* Global error */}
       {status === "error" && globalError && (
-        <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-4 text-xs">
-          <div className="text-red-400 font-medium mb-1">Step failed</div>
-          <div className="font-mono text-text-muted break-all">{globalError}</div>
+        <div className="rounded-xl border border-rose-400/25 bg-rose-500/5 p-4 text-xs">
+          <div className="mb-1 font-medium text-rose-300">Step failed</div>
+          <div className="break-all font-mono text-text-muted">{globalError}</div>
           {globalError.includes("User rejected") || globalError.includes("user rejected") ? (
             <div className="mt-2 text-text-muted">Request was rejected in wallet — click Run again to retry.</div>
           ) : (
@@ -307,9 +306,9 @@ export function WalletSettlement() {
       {status === "done" && result && (
         <>
           <div className="flex items-center gap-3">
-            <div className="h-px flex-1 bg-border" />
-            <span className="text-xs text-text-muted uppercase tracking-wider">Wallet Result</span>
-            <div className="h-px flex-1 bg-border" />
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-hairline-strong" />
+            <span className="text-xs uppercase tracking-[0.16em] text-text-muted">Wallet Result</span>
+            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-hairline-strong" />
           </div>
           <DemoResult result={result} />
         </>
@@ -332,11 +331,11 @@ function StepRow({ label, state }: { label: string; state: StepState }) {
 
   const labelColor =
     state.status === "done"
-      ? "text-emerald-400"
+      ? "text-teal-300"
       : state.status === "running"
       ? "text-text-primary"
       : state.status === "error"
-      ? "text-red-400"
+      ? "text-rose-300"
       : "text-text-muted";
 
   return (
@@ -354,7 +353,7 @@ function StepRow({ label, state }: { label: string; state: StepState }) {
 
 function CheckIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-emerald-400">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-teal-300">
       <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5" />
       <path d="M4.5 7l2 2 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
@@ -363,7 +362,7 @@ function CheckIcon() {
 
 function ErrorIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-red-400">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-rose-300">
       <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5" />
       <path d="M5 5l4 4M9 5l-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>

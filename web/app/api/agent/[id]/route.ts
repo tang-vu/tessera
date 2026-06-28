@@ -3,7 +3,8 @@
  * receipts from ReceiptAnchored events, open loan from CreditLine.
  */
 import { NextResponse } from "next/server";
-import { getPublicClient, getDeployment, CHAIN_ID } from "@/lib/chain-client";
+import { getPublicClient, getDeployment, getDeployBlock, CHAIN_ID } from "@/lib/chain-client";
+import { cached } from "@/lib/server-cache";
 import {
   AGENT_REGISTRY_ABI,
   REPUTATION_ORACLE_ABI,
@@ -67,6 +68,10 @@ export async function GET(
     if (isNaN(id) || id < 1) {
       return NextResponse.json({ error: "Invalid agent id" }, { status: 400 });
     }
+    // Short TTL cache: the detail page polls every ~4s, but the on-chain state
+    // (and event history) changes far less often — this cuts redundant RPC load
+    // and keeps the page snappy while staying fresh enough for the live demo.
+    const detail = await cached(`agent:${CHAIN_ID}:${id}`, 5000, async () => {
     const bigId = BigInt(id);
     const client = getPublicClient();
     const d = getDeployment();
@@ -128,7 +133,7 @@ export async function GET(
         ],
       },
       args: { agentId: bigId },
-      fromBlock: 0n,
+      fromBlock: getDeployBlock(),
       toBlock: "latest",
     });
 
@@ -154,7 +159,7 @@ export async function GET(
         ],
       },
       args: { agentId: bigId },
-      fromBlock: 0n,
+      fromBlock: getDeployBlock(),
       toBlock: "latest",
     });
 
@@ -179,7 +184,7 @@ export async function GET(
       })
     );
 
-    const detail: AgentDetail = {
+    const result: AgentDetail = {
       id,
       controller,
       uri,
@@ -204,6 +209,9 @@ export async function GET(
       receipts,
       chainId: CHAIN_ID,
     };
+
+    return result;
+    });
 
     return NextResponse.json(detail);
   } catch (err) {

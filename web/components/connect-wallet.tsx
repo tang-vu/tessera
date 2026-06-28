@@ -18,13 +18,13 @@ export function ConnectWallet() {
     return (
       <div className="flex items-center gap-2">
         {/* Connected address pill */}
-        <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+        <span className="hidden items-center gap-1.5 rounded-full border border-teal-400/25 bg-teal-500/10 px-2.5 py-1 font-mono text-xs font-medium text-teal-300 sm:inline-flex">
+          <span className="h-1.5 w-1.5 rounded-full bg-teal-400" />
           {shortAddress(address)}
         </span>
         <button
           onClick={() => disconnect()}
-          className="px-3 py-1.5 text-xs font-medium rounded-md text-text-secondary hover:text-text-primary hover:bg-surface-2/60 transition-colors"
+          className="rounded-full px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:bg-white/[0.05] hover:text-text-primary"
         >
           Disconnect
         </button>
@@ -37,9 +37,8 @@ export function ConnectWallet() {
       onClick={() => connect({ connector: injected() })}
       disabled={isPending}
       className={[
-        "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
-        "border border-accent/30 text-accent hover:bg-accent/10 hover:border-accent/50",
-        isPending ? "opacity-50 cursor-not-allowed" : "",
+        "rounded-full border border-iris/30 bg-iris/10 px-3.5 py-1.5 text-sm font-medium text-iris transition-all hover:border-iris/50 hover:bg-iris/20",
+        isPending ? "cursor-not-allowed opacity-50" : "",
       ]
         .filter(Boolean)
         .join(" ")}

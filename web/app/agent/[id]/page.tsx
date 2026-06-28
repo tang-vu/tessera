@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { TierPill } from "@/components/tier-pill";
+import { ScoreRing } from "@/components/score-ring";
 import { ScoreHistoryChart } from "@/components/score-history-chart";
 import {
   agentNameFromUri,
@@ -12,8 +13,6 @@ import {
   shortAddress,
   shortHash,
   formatTimestamp,
-  tierFromScore,
-  TIER_STYLES,
 } from "@/lib/format-helpers";
 import type { AgentDetail } from "@/app/api/agent/[id]/route";
 
@@ -51,37 +50,38 @@ export default function AgentDetailPage() {
   if (error || !data)
     return (
       <div className="mx-auto max-w-4xl px-4 py-20 text-center">
-        <div className="text-red-400 text-sm">{error ?? "Agent not found"}</div>
-        <Link href="/" className="mt-4 inline-block text-accent text-sm hover:underline">
+        <div className="text-sm text-rose-300">{error ?? "Agent not found"}</div>
+        <Link href="/" className="mt-4 inline-block text-sm text-iris hover:underline">
           ← Back to directory
         </Link>
       </div>
     );
 
   const name = agentNameFromUri(data.uri, data.id);
-  const tier = tierFromScore(data.score);
-  const tierStyle = TIER_STYLES[tier];
   const isLocal = data.chainId === 31337;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 sm:px-6 py-10 space-y-6">
+    <div className="mx-auto max-w-4xl space-y-6 px-4 py-10 sm:px-6">
       {/* Back link */}
-      <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-primary transition-colors">
+      <Link
+        href="/"
+        className="inline-flex items-center gap-1.5 text-sm text-text-muted transition-colors hover:text-text-primary"
+      >
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
           <path d="M9 2L4 7l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
         Agent Directory
       </Link>
 
-      {/* Header */}
-      <div className="rounded-card border border-border bg-surface p-6">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-2xl font-bold text-text-primary">{name}</h1>
+      {/* Hero: identity + score gauge */}
+      <div className="card accent-line fade-up p-6 sm:p-8">
+        <div className="flex flex-col items-center gap-8 sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-center sm:text-left">
+            <div className="mb-3 flex items-center justify-center gap-3 sm:justify-start">
+              <h1 className="font-display text-3xl font-bold tracking-tight text-text-primary">{name}</h1>
               <TierPill score={data.score} />
             </div>
-            <div className="flex flex-wrap gap-3 text-xs text-text-muted font-mono">
+            <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 font-mono text-xs text-text-muted sm:justify-start">
               <span>ID #{data.id}</span>
               <span>·</span>
               <span title={data.controller}>{shortAddress(data.controller)}</span>
@@ -93,31 +93,12 @@ export default function AgentDetailPage() {
               )}
             </div>
           </div>
-
-          {/* Score gauge */}
-          <div className="text-right">
-            <div className={`text-5xl font-bold tabular-nums ${tierStyle.text}`}>
-              {data.score}
-            </div>
-            <div className="text-xs text-text-muted mt-0.5">/ 1000</div>
-          </div>
-        </div>
-
-        {/* Score bar */}
-        <div className="mt-5 h-2 w-full rounded-full bg-surface-3 overflow-hidden">
-          <div
-            className={`h-full rounded-full transition-all duration-700 ${
-              tier === "Prime" ? "bg-emerald-400" :
-              tier === "Established" ? "bg-blue-400" :
-              tier === "Emerging" ? "bg-amber-400" : "bg-red-400"
-            }`}
-            style={{ width: `${(data.score / 1000) * 100}%` }}
-          />
+          <ScoreRing score={data.score} />
         </div>
       </div>
 
       {/* Credit terms */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <TermCard label="Credit Limit" value={formatUsdc(data.creditLimit)} accent />
         <TermCard label="Fee Rate" value={formatFeeBps(data.feeBps)} />
         <TermCard label="Available Credit" value={formatUsdc(data.availableCredit)} />
@@ -129,11 +110,8 @@ export default function AgentDetailPage() {
       </div>
 
       {/* Stats */}
-      <div className="rounded-card border border-border bg-surface p-5">
-        <h2 className="text-xs font-medium uppercase tracking-wider text-text-muted mb-4">
-          Activity Stats
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <Panel title="Activity Stats">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           <Stat label="Settlements" value={data.settlements.toLocaleString()} />
           <Stat label="Failures" value={data.failures.toLocaleString()} warn={data.failures > 0} />
           <Stat label="Disputes Lost" value={data.disputesLost.toLocaleString()} warn={data.disputesLost > 0} />
@@ -143,21 +121,15 @@ export default function AgentDetailPage() {
             <Stat label="Last Updated" value={formatTimestamp(data.lastUpdate)} colSpan />
           )}
         </div>
-      </div>
+      </Panel>
 
       {/* Score history chart */}
-      <div className="rounded-card border border-border bg-surface p-5">
-        <h2 className="text-xs font-medium uppercase tracking-wider text-text-muted mb-4">
-          Score History
-        </h2>
+      <Panel title="Score History">
         <ScoreHistoryChart events={data.scoreHistory} currentScore={data.score} />
-      </div>
+      </Panel>
 
       {/* Receipts */}
-      <div className="rounded-card border border-border bg-surface p-5">
-        <h2 className="text-xs font-medium uppercase tracking-wider text-text-muted mb-4">
-          Anchored Receipts ({data.receipts.length})
-        </h2>
+      <Panel title={`Anchored Receipts (${data.receipts.length})`}>
         {data.receipts.length === 0 ? (
           <p className="text-sm text-text-muted">No receipts anchored yet.</p>
         ) : (
@@ -165,9 +137,9 @@ export default function AgentDetailPage() {
             {[...data.receipts].reverse().map((r, i) => (
               <div
                 key={i}
-                className="rounded-lg border border-border-subtle bg-surface-2 px-4 py-3 font-mono text-xs"
+                className="rounded-xl border border-hairline bg-white/[0.02] px-4 py-3 font-mono text-xs"
               >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-1 gap-x-4">
+                <div className="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-2">
                   <Row label="Settlement" value={shortHash(r.settlementId)} />
                   <Row label="Receipt hash" value={shortHash(r.receiptHash)} />
                   <Row label="Signer" value={shortAddress(r.signer)} />
@@ -181,7 +153,7 @@ export default function AgentDetailPage() {
                     href={`https://hashkey.blockscout.com/`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-2 inline-flex items-center gap-1 text-accent hover:underline text-xs"
+                    className="mt-2 inline-flex items-center gap-1 text-xs text-iris hover:underline"
                   >
                     View on explorer
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
@@ -193,7 +165,18 @@ export default function AgentDetailPage() {
             ))}
           </div>
         )}
-      </div>
+      </Panel>
+    </div>
+  );
+}
+
+function Panel({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="card fade-up p-5 sm:p-6">
+      <h2 className="mb-4 font-display text-xs font-semibold uppercase tracking-[0.16em] text-text-secondary">
+        {title}
+      </h2>
+      {children}
     </div>
   );
 }
@@ -210,9 +193,9 @@ function TermCard({
   warn?: boolean;
 }) {
   return (
-    <div className="rounded-card border border-border bg-surface p-4">
-      <div className="text-xs text-text-muted mb-1">{label}</div>
-      <div className={`text-base font-bold ${accent ? "text-accent" : warn ? "text-red-400" : "text-text-primary"}`}>
+    <div className="card p-4">
+      <div className="mb-1 text-[11px] uppercase tracking-wider text-text-muted">{label}</div>
+      <div className={`font-display text-base font-bold ${accent ? "text-gradient" : warn ? "text-rose-300" : "text-text-primary"}`}>
         {value}
       </div>
     </div>
@@ -232,8 +215,8 @@ function Stat({
 }) {
   return (
     <div className={colSpan ? "sm:col-span-2" : ""}>
-      <div className="text-xs text-text-muted mb-0.5">{label}</div>
-      <div className={`text-sm font-semibold ${warn ? "text-red-400" : "text-text-primary"}`}>
+      <div className="mb-0.5 text-xs text-text-muted">{label}</div>
+      <div className={`text-sm font-semibold ${warn ? "text-rose-300" : "text-text-primary"}`}>
         {value}
       </div>
     </div>
@@ -243,23 +226,25 @@ function Stat({
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex gap-2">
-      <span className="text-text-muted w-24 flex-shrink-0">{label}</span>
-      <span className="text-text-secondary truncate">{value}</span>
+      <span className="w-24 flex-shrink-0 text-text-muted">{label}</span>
+      <span className="truncate text-text-secondary">{value}</span>
     </div>
   );
 }
 
 function LoadingSkeleton() {
   return (
-    <div className="mx-auto max-w-4xl px-4 sm:px-6 py-10 space-y-6 animate-pulse">
-      <div className="h-4 w-32 bg-surface-3 rounded" />
-      <div className="rounded-card border border-border bg-surface p-6 h-40" />
+    <div className="mx-auto max-w-4xl space-y-6 px-4 py-10 sm:px-6">
+      <div className="shimmer h-4 w-32 rounded" />
+      <div className="card h-44 p-6">
+        <div className="shimmer h-full w-full rounded-xl opacity-40" />
+      </div>
       <div className="grid grid-cols-4 gap-3">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="rounded-card border border-border bg-surface h-20" />
+          <div key={i} className="card h-20" />
         ))}
       </div>
-      <div className="rounded-card border border-border bg-surface h-64" />
+      <div className="card h-64" />
     </div>
   );
 }

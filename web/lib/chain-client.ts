@@ -20,6 +20,22 @@ const STATIC_DEPLOYMENTS: Record<number, Deployment> = {
   177: d177 as Deployment,
 };
 
+/**
+ * Block each deployment landed at (from the Foundry broadcast for that chain).
+ * Used as the `fromBlock` for event-log scans so RPCs never scan from genesis —
+ * the public HashKey RPC times out on a full-history `eth_getLogs`, but a scan
+ * bounded to the deploy block returns in well under a second.
+ */
+const DEPLOY_BLOCKS: Record<number, bigint> = {
+  133: 29_390_725n,
+  177: 23_811_666n,
+};
+
+/** Lower bound for log scans on the active chain (0 for local anvil). */
+export function getDeployBlock(): bigint {
+  return DEPLOY_BLOCKS[CHAIN_ID] ?? 0n;
+}
+
 let _deployment: Deployment | null = null;
 
 export function getDeployment(): Deployment {
