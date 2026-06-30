@@ -7,6 +7,7 @@ import { ConnectWallet } from "./connect-wallet";
 const NAV_LINKS = [
   { href: "/", label: "Agents" },
   { href: "/credit", label: "Credit Pool" },
+  { href: "/scoring", label: "Scoring" },
   { href: "/demo", label: "Live Demo" },
 ];
 

@@ -5,7 +5,8 @@
  * from the on-chain agent set: tier distribution + network-level KPIs.
  * Turns a flat directory into a portfolio-level view of network health.
  */
-import { formatUsdc, tierFromScore, TIER_STYLES, type Tier } from "@/lib/format-helpers";
+import { formatUsdc, TIER_STYLES, type Tier } from "@/lib/format-helpers";
+import { computeNetworkStats } from "@/lib/network-stats";
 import type { AgentSummary } from "@/app/api/agents/route";
 
 const TIER_ORDER: Tier[] = ["Untrusted", "Emerging", "Established", "Prime"];
@@ -13,27 +14,7 @@ const TIER_ORDER: Tier[] = ["Untrusted", "Emerging", "Established", "Prime"];
 export function NetworkOverview({ agents }: { agents: AgentSummary[] }) {
   if (agents.length === 0) return null;
 
-  const counts: Record<Tier, number> = {
-    Untrusted: 0,
-    Emerging: 0,
-    Established: 0,
-    Prime: 0,
-  };
-  let scoreSum = 0;
-  let settlements = 0;
-  let failures = 0;
-  let capacity = 0n;
-  for (const a of agents) {
-    counts[tierFromScore(a.score)]++;
-    scoreSum += a.score;
-    settlements += a.settlements;
-    failures += a.failures;
-    capacity += BigInt(a.creditLimit);
-  }
-
-  const avgScore = Math.round(scoreSum / agents.length);
-  const totalActions = settlements + failures;
-  const reliability = totalActions === 0 ? 100 : (settlements / totalActions) * 100;
+  const { counts, avgScore, reliability, capacity, settlements } = computeNetworkStats(agents);
 
   return (
     <div className="card accent-line p-5 sm:p-6">
@@ -84,7 +65,7 @@ export function NetworkOverview({ agents }: { agents: AgentSummary[] }) {
         <div className="grid grid-cols-2 gap-3">
           <Kpi label="Avg Score" value={avgScore.toString()} gradient />
           <Kpi label="Reliability" value={`${reliability.toFixed(1)}%`} />
-          <Kpi label="Credit Capacity" value={formatUsdc(capacity.toString())} />
+          <Kpi label="Credit Capacity" value={formatUsdc(capacity)} />
           <Kpi label="Settlements" value={settlements.toLocaleString()} />
         </div>
       </div>
