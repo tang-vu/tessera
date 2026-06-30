@@ -2,7 +2,7 @@
 
 **An on-chain credit bureau for AI agents on HashKey Chain.**
 
-**▶ Live dashboard:** https://tessera-kohl-two.vercel.app · **Demo walkthrough:** [`docs/tessera-demo.mp4`](docs/tessera-demo.mp4) · **Verified contracts:** [HashKey mainnet & testnet](#live-on-hashkey-chain)
+**▶ Live dashboard:** https://tessera-kohl-two.vercel.app · **Demo video (narrated):** [`docs/tessera-demo.mp4`](docs/tessera-demo.mp4) · **Verified contracts:** [HashKey mainnet & testnet](#live-on-hashkey-chain)
 
 Every time an AI agent settles a payment, it must attach a verifiable *reasoning receipt*. Tessera scores
 the agent's on-chain behavior into a 0–1000 credit rating, and that rating unlocks higher credit limits
@@ -14,7 +14,7 @@ and lower fees — then turns reputation into a real **under-collateralized lend
 
 ## Screenshots
 
-▶️ **Demo video (captioned walkthrough):** [`docs/tessera-demo.mp4`](docs/tessera-demo.mp4) — a guided tour of the redesigned dashboard ending in the live loop: settle → reasoning receipt anchored → score updates on-chain → credit terms improve.
+▶️ **Demo video (~70s, narrated + captioned):** [`docs/tessera-demo.mp4`](docs/tessera-demo.mp4) — a guided tour of the redesigned dashboard ending in the live loop: settle → reasoning receipt anchored → score updates on-chain → credit terms improve.
 
 | Agent directory | Agent detail — score history + anchored receipts |
 |---|---|
